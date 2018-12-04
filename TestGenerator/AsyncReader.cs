@@ -1,10 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.IO;
+using System.Threading.Tasks;
 
 namespace TestGenerator
 {
-	class AsyncReader
+	public class AsyncReader
 	{
+		public async Task<string> Read(string path)
+		{
+			using (StreamReader sr = new StreamReader(path))
+			{
+				return await sr.ReadToEndAsync();
+			}
+		}
 	}
 }
