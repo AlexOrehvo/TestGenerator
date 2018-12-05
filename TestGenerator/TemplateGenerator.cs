@@ -10,6 +10,23 @@ namespace TestGenerator
 {
 	class TemplateGenerator
 	{
+		public TestClassTemplate GetTemplate(string sourceCode)
+		{
+			List<TestClassTemplate> templates = GetTestTemplates(sourceCode);
+			if (templates.Count != 0)
+			{
+				string fileName = templates[0].FileName;
+				string content = "";
+				foreach (TestClassTemplate template in templates)
+				{
+					content += template.Content;
+				}
+				return new TestClassTemplate(fileName, content);
+			} else
+			{
+				return null;
+			}
+		}
 
 		private List<TestClassTemplate> GetTestTemplates(string sourceCode)
 		{
@@ -38,6 +55,7 @@ namespace TestGenerator
 				string innerText = testClass.NormalizeWhitespace().ToFullString();
 				testClasses.Add(new TestClassTemplate(fileName, innerText));
 			}
+			return testClasses;
 		}
 
 		private SyntaxList<MemberDeclarationSyntax> GetTestMethods(List<string> methods)

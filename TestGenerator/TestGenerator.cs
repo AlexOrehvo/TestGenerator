@@ -33,7 +33,7 @@ namespace TestGenerator
 				MaxDegreeOfParallelism = maxOriginalFileCount
 			};
 
-			ExecutionDataflowBlockOptions maProcessedFilesTasks = new ExecutionDataflowBlockOptions
+			ExecutionDataflowBlockOptions maxProcessedFilesTasks = new ExecutionDataflowBlockOptions
 			{
 				MaxDegreeOfParallelism = maxProcessedFileCount
 			};
@@ -44,6 +44,28 @@ namespace TestGenerator
 			};
 
 			AsyncReader ar = new AsyncReader();
+			TemplateGenerator generator = new TemplateGenerator();
+
+			TransformBlock<string, string> readingBlock =
+				new TransformBlock<string, string>(new Func<string, Task<String>>(ar.Read), maxReadableFilesTasks);
+
+			TransformBlock<string, TestClassTemplate> processingBlock =
+				new TransformBlock<string, TestClassTemplate>(new Func<string, TestClassTemplate>(generator.GetTemplate), maxProcessedFilesTasks);
+
+			ActionBlock<TestClassTemplate> writingBlock = new ActionBlock<TestClassTemplate>(
+				(classTemplate) => writer.Write(classTemplate), maxWritetableFilesTasks);
+
+			readingBlock.LinkTo(processingBlock, linkOptions);
+			processingBlock.LinkTo(writingBlock, linkOptions);
+
+			foreach (string filePath in fileNames)
+			{
+				readingBlock.Post(filePath);
+			}
+
+			readingBlock.Complete();
+
+			await writingBlock.Completion;
 		}
 	}
 }
