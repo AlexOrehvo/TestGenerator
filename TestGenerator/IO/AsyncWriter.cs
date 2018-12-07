@@ -15,7 +15,7 @@ namespace TestGenerator
 			this.outPutDirectory = outPutDirectory;
 		}
 
-		public async Task Write(TestClassTemplate classTemplate)
+		public async Task Write(TestClassInfo classTemplate)
 		{
 			if (classTemplate == null)
 			{

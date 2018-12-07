@@ -1,12 +1,7 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions.Interfaces;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using TestGenerator;
-using System.Linq;
 using System.IO;
 
 namespace TestGeneratorTests

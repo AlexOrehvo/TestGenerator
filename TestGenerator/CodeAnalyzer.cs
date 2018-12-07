@@ -32,6 +32,7 @@ namespace TestGenerator
 				string nmspaceName = nmspace.Name.ToString();
 				classesInfo.Add(new ClassInfo(className, nmspaceName, GetMethods(cls)));
 			}
+			Console.WriteLine(classesInfo.Count);
 			return classesInfo;
 		}
 

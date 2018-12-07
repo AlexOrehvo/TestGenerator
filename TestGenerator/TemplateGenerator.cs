@@ -10,35 +10,32 @@ namespace TestGenerator
 {
 	public class TemplateGenerator
 	{
-		public TestClassTemplate GetTemplate(string sourceCode)
+		public TestClassInfo GetTemplate(string sourceCode)
 		{
-			List<TestClassTemplate> templates = GetTestTemplates(sourceCode);
+			List<TestClassInfo> templates = GetTestTemplates(sourceCode);
 			if (templates.Count != 0)
 			{
 				string fileName = templates[0].FileName;
 				string content = "";
-				foreach (TestClassTemplate template in templates)
+				foreach (TestClassInfo template in templates)
 				{
 					content += template.Content;
 				}
-				return new TestClassTemplate(fileName, content);
+				return new TestClassInfo(fileName, content);
 			} else
 			{
 				return null;
 			}
 		}
 
-		private List<TestClassTemplate> GetTestTemplates(string sourceCode)
+		private List<TestClassInfo> GetTestTemplates(string sourceCode)
 		{
 			CodeAnalyzer analyzer = new CodeAnalyzer();
 			List<ClassInfo> classes = analyzer.Parse(sourceCode);
-			List<TestClassTemplate> testClasses = new List<TestClassTemplate>();
-			foreach(ClassInfo classInfo in classes) 
-			{
-				Console.WriteLine(classInfo.Name + " " + classInfo.Namespace);
-			}
+			List<TestClassInfo> testClasses = new List<TestClassInfo>();
 			foreach (ClassInfo classInfo in classes)
 			{
+				Console.WriteLine(classInfo.Name + " " + classInfo.Namespace);
 				NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(
 					QualifiedName(
 						IdentifierName(classInfo.Namespace),
@@ -57,7 +54,7 @@ namespace TestGenerator
 							.WithMembers(GetTestMethods(classInfo.MethodList))))));
 				string fileName = classInfo.Name + "Tests.cs";
 				string innerText = testClass.NormalizeWhitespace().ToFullString();
-				testClasses.Add(new TestClassTemplate(fileName, innerText));
+				testClasses.Add(new TestClassInfo(fileName, innerText));
 			}
 			return testClasses;
 		}
@@ -94,50 +91,28 @@ namespace TestGenerator
 		{
 			List<UsingDirectiveSyntax> usings = new List<UsingDirectiveSyntax>
 			{
-				UsingDirective
-				(
-					IdentifierName("System")
-				),
-				UsingDirective
-				(
-					QualifiedName
-					(
-						QualifiedName
-						(
+				UsingDirective(
+					IdentifierName("System")),
+				UsingDirective(
+					QualifiedName(
+						QualifiedName(
 							IdentifierName("System"),
-							IdentifierName("Collections")
-						),
-						IdentifierName("Generic")
-					)
-				),
-				UsingDirective
-				(
-					QualifiedName
-					(
+							IdentifierName("Collections")),
+						IdentifierName("Generic"))),
+				UsingDirective(
+					QualifiedName(
 						IdentifierName("System"),
-						IdentifierName("Linq")
-					)
-				),
-				UsingDirective
-				(
-					QualifiedName
-					(
-						QualifiedName
-						(
-							QualifiedName
-							(
+						IdentifierName("Linq"))),
+				UsingDirective(
+					QualifiedName(
+						QualifiedName(
+							QualifiedName(
 								IdentifierName("Microsoft"),
-								IdentifierName("VisualStudio")
-							),
-							IdentifierName("TestTools")
-						),
-						IdentifierName("UnitTesting")
-					)
-				),
-				UsingDirective
-				(
-					IdentifierName(classInfo.Namespace)
-				)
+								IdentifierName("VisualStudio")),
+							IdentifierName("TestTools")),
+						IdentifierName("UnitTesting"))),
+				UsingDirective(
+					IdentifierName(classInfo.Namespace))
 			};
 			return new SyntaxList<UsingDirectiveSyntax>(usings);
 		}

@@ -15,10 +15,10 @@ namespace TestGeneratorTests
 	{
 		private string path;
 		private AsyncReader ar;
-		private TestClassTemplate testClassTemplate;
+		private TestClassInfo testClassInfo;
 		private TemplateGenerator generator;
 		private SyntaxNode root;
-		private string sourceCode;
+		private string code;
 		private SyntaxNode generatedRoot;
 
 		[TestInitialize]
@@ -26,19 +26,19 @@ namespace TestGeneratorTests
 		{
 			path = Environment.CurrentDirectory + "\\..\\..\\..\\TemplateGeneratorTest.cs";
 			ar = new AsyncReader();
-			sourceCode = ar.Read(path).Result;
+			code = ar.Read(path).Result;
 
 			generator = new TemplateGenerator();
 
-			root = CSharpSyntaxTree.ParseText(sourceCode).GetRoot();
+			root = CSharpSyntaxTree.ParseText(code).GetRoot();
 		}
 
 		[TestMethod]
 		public void GetTemplateTest()
 		{
-			testClassTemplate = generator.GetTemplate(sourceCode);
-			Assert.IsNotNull(testClassTemplate);
-			generatedRoot = CSharpSyntaxTree.ParseText(testClassTemplate.Content).GetRoot();
+			testClassInfo = generator.GetTemplate(code);
+			Assert.IsNotNull(testClassInfo);
+			generatedRoot = CSharpSyntaxTree.ParseText(testClassInfo.Content).GetRoot();
 			List<ClassDeclarationSyntax> generatedClasses = new List<ClassDeclarationSyntax>(generatedRoot.DescendantNodes().OfType<ClassDeclarationSyntax>());
 			List<ClassDeclarationSyntax> sourceClasses = new List<ClassDeclarationSyntax>(root.DescendantNodes().OfType<ClassDeclarationSyntax>());
 			Assert.AreEqual(sourceClasses.Count, generatedClasses.Count);
@@ -52,10 +52,12 @@ namespace TestGeneratorTests
 					sourceClass.DescendantNodes().OfType<MethodDeclarationSyntax>()
 					.Where(method => method.Modifiers.
 						Any(modifer => modifer.ToString() == "public")));
+
 				List<MethodDeclarationSyntax> generatedMethods = new List<MethodDeclarationSyntax>(
 					generatedClass.DescendantNodes().OfType<MethodDeclarationSyntax>()
 					.Where(method => method.Modifiers.
 						Any(modifer => modifer.ToString() == "public")));
+
 				Assert.AreEqual(sourceMethods.Count, generatedMethods.Count);
 
 				for (int j = 0; j < sourceMethods.Count; j++)
