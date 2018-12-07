@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TestGenerator
 {
-	class ClassInfo
+	public class ClassInfo
 	{
 		public string Name
 		{

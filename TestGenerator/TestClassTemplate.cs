@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TestGenerator
 {
-	class TestClassTemplate
+	public class TestClassTemplate
 	{
 		public string FileName
 		{

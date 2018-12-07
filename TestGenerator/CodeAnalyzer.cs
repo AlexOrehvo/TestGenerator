@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace TestGenerator
 {
-	class CodeAnalyzer
+	public class CodeAnalyzer
 	{
 		SyntaxTree syntaxThree;
 		SyntaxNode syntaxRoot;
 		List<ClassDeclarationSyntax> classList;
 
 		public List<ClassInfo> Parse(string sourceCode) {
+			syntaxThree = CSharpSyntaxTree.ParseText(sourceCode);
 			syntaxRoot = syntaxThree.GetRoot();
 			return GetClasses();
 		}

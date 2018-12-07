@@ -23,42 +23,38 @@ namespace TestGenerator
 
 		public async Task Generate(AsyncWriter writer)
 		{
-			DataflowLinkOptions linkOptions = new DataflowLinkOptions
-			{
-				PropagateCompletion = true
-			};
-
+			DataflowLinkOptions linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
 			ExecutionDataflowBlockOptions maxReadableFilesTasks = new ExecutionDataflowBlockOptions
 			{
 				MaxDegreeOfParallelism = maxOriginalFileCount
 			};
 
-			ExecutionDataflowBlockOptions maxProcessedFilesTasks = new ExecutionDataflowBlockOptions
+			ExecutionDataflowBlockOptions maxProcessableTasks = new ExecutionDataflowBlockOptions
 			{
 				MaxDegreeOfParallelism = maxProcessedFileCount
 			};
 
-			ExecutionDataflowBlockOptions maxWritetableFilesTasks = new ExecutionDataflowBlockOptions
+			ExecutionDataflowBlockOptions maxWritableTasks = new ExecutionDataflowBlockOptions
 			{
 				MaxDegreeOfParallelism = maxWritetableFileCount
 			};
 
-			AsyncReader ar = new AsyncReader();
-			TemplateGenerator generator = new TemplateGenerator();
+			AsyncReader asyncReader = new AsyncReader();
+			TemplateGenerator templateGenerator = new TemplateGenerator();
 
 			TransformBlock<string, string> readingBlock =
-				new TransformBlock<string, string>(new Func<string, Task<String>>(ar.Read), maxReadableFilesTasks);
+				new TransformBlock<string, string>(new Func<string, Task<String>>(asyncReader.Read), maxReadableFilesTasks);
 
 			TransformBlock<string, TestClassTemplate> processingBlock =
-				new TransformBlock<string, TestClassTemplate>(new Func<string, TestClassTemplate>(generator.GetTemplate), maxProcessedFilesTasks);
+				new TransformBlock<string, TestClassTemplate>(new Func<string, TestClassTemplate>(templateGenerator.GetTemplate), maxProcessableTasks);
 
 			ActionBlock<TestClassTemplate> writingBlock = new ActionBlock<TestClassTemplate>(
-				(classTemplate) => writer.Write(classTemplate), maxWritetableFilesTasks);
+				(classTemplate) => writer.Write(classTemplate), maxWritableTasks);
 
 			readingBlock.LinkTo(processingBlock, linkOptions);
 			processingBlock.LinkTo(writingBlock, linkOptions);
 
-			foreach (string filePath in fileNames)
+			foreach (string filePath in fileNameList)
 			{
 				readingBlock.Post(filePath);
 			}
@@ -66,6 +62,7 @@ namespace TestGenerator
 			readingBlock.Complete();
 
 			await writingBlock.Completion;
+
 		}
 	}
 }

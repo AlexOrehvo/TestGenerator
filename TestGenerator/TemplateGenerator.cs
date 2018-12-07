@@ -8,7 +8,7 @@ using System.Text;
 
 namespace TestGenerator
 {
-	class TemplateGenerator
+	public class TemplateGenerator
 	{
 		public TestClassTemplate GetTemplate(string sourceCode)
 		{
@@ -33,6 +33,10 @@ namespace TestGenerator
 			CodeAnalyzer analyzer = new CodeAnalyzer();
 			List<ClassInfo> classes = analyzer.Parse(sourceCode);
 			List<TestClassTemplate> testClasses = new List<TestClassTemplate>();
+			foreach(ClassInfo classInfo in classes) 
+			{
+				Console.WriteLine(classInfo.Name + " " + classInfo.Namespace);
+			}
 			foreach (ClassInfo classInfo in classes)
 			{
 				NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TestGenerator
 {
-	class AsyncWriter
+	public class AsyncWriter
 	{
 		private string outPutDirectory;
 

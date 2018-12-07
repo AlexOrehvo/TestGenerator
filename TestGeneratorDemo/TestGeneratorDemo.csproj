@@ -3,6 +3,13 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject>TestGeneratorDemo.Program</StartupObject>
+    <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TestGenerator\TestGenerator.csproj" />
+  </ItemGroup>
 
 </Project>
